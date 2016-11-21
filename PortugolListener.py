@@ -107,6 +107,24 @@ class PortugolListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by PortugolParser#condicional.
+    def enterCondicional(self, ctx:PortugolParser.CondicionalContext):
+        pass
+
+    # Exit a parse tree produced by PortugolParser#condicional.
+    def exitCondicional(self, ctx:PortugolParser.CondicionalContext):
+        pass
+
+
+    # Enter a parse tree produced by PortugolParser#condicao.
+    def enterCondicao(self, ctx:PortugolParser.CondicaoContext):
+        pass
+
+    # Exit a parse tree produced by PortugolParser#condicao.
+    def exitCondicao(self, ctx:PortugolParser.CondicaoContext):
+        pass
+
+
     # Enter a parse tree produced by PortugolParser#expr.
     def enterExpr(self, ctx:PortugolParser.ExprContext):
         pass
