@@ -1,3 +1,8 @@
 __pycache__/
 __pycache__/*
 antlr-4.5.3-complete.jar
+Portugol.tokens
+PortugolLexer.py
+PortugolLexer.tokens
+PortugolListener.py
+PortugolParser.py
