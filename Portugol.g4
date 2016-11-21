@@ -27,6 +27,7 @@ blocoPrincipal: comandos+
 comandos: atribuicao
         | leitura
         | impressao
+        | condicional
     ;
 
 atribuicao: ID '=' expr ';'
@@ -37,6 +38,20 @@ leitura: 'LEIA' '(' listaIDs[0] ')' ';'
 
 impressao: 'IMPRIMA' '(' listaExprs ')' ';'
          ;
+
+condicional: 'SE' '(' condicao ')' 'ENTAO' blocoPrincipal ('SENAO' blocoPrincipal)? 'FIM' ';'
+            ;
+
+condicao: ID
+        | '!'ID
+        | ID '&' ID
+        | ID '|' ID
+        | expr '>' expr
+        | expr '<' expr
+        | expr '>=' expr
+        | expr '<=' expr
+        | expr '==' expr
+        | expr '!=' expr
 
 expr: expr op=('+'|'-') term
     | term
