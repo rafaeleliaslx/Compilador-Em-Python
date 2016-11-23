@@ -52,6 +52,7 @@ condicao: ID
         | expr '<=' expr
         | expr '==' expr
         | expr '!=' expr
+        ;
 
 expr: expr op=('+'|'-') term
     | term
