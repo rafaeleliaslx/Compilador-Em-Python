@@ -24,7 +24,8 @@ listaParamentros: (decVars)(';' decVars)*
 blocoPrincipal: comandos+
               ;
 
-comandos: atribuicao
+comandos: decVars
+		| atribuicao
         | leitura
         | impressao
         | condicional
