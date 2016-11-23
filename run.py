@@ -28,7 +28,7 @@ class AcoesSemanticas(PortugolListener):
 					print('Variavel duplicada: '+str(id))
 
 	def enterBlocoPrincipal(self, ctx:PortugolParser.BlocoPrincipalContext):
-		print("*"*10+" MAPA DE MEMORIA"+"*"*10)
+		print("\n"+"*"*10+" MAPA DE MEMORIA"+"*"*10)
 		pprint(self.tab_simb)
 
 
@@ -43,7 +43,9 @@ def main(argv):
     acoes = AcoesSemanticas()
     walker = ParseTreeWalker()
     walker.walk(acoes, tree)
-    # pprint(Trees.toStringTree(tree, None, parser))
+    
+    print("\n"+"*"*15+" ÁRVORE "+"*"*15)
+    pprint(Trees.toStringTree(tree, None, parser))
 
 if __name__ == '__main__':
     main(sys.argv)
