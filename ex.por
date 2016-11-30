@@ -6,11 +6,11 @@ PROG Serie1aN;
   LEIA(X, Y, Z, X);
   ABC = 10;
 
-  SE ( Y > Z ) ENTAO
+  SE ( ! Y > Z ) ENTAO
     INTEIRO NOVA = X, NOVA2, NOVA3=3+4;
     X = 50;
   SENAO
-    INTEIRO TEMP = X;
+    INTEIRO TEMP = - X;
     X = 100;
   FIM;
 
