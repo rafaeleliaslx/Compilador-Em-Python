@@ -11,7 +11,7 @@ tipo returns [int tip]
     | 'BOOLEANO' {$tip=3;}
     | 'STRING'   {$tip=4;}
     ;
-listaIDs[int tip]: ID (',' ID)*
+listaIDs[int tip]: ( ID | atribuicao ) (',' ( ID | atribuicao ) )*
         ;
 
 decFunc: 'FUNCAO' ID '(' listaParamentros? ')' ( ':' tipo ) ? ';' decVars? 
@@ -25,13 +25,13 @@ blocoPrincipal: comandos+
               ;
 
 comandos: decVars
-		| atribuicao
+		    | atribuicao ';'
         | leitura
         | impressao
         | condicional
     ;
 
-atribuicao: ID '=' expr ';'
+atribuicao: ID '=' expr (',' ID '=' expr)*
           ;
 
 leitura: 'LEIA' '(' listaIDs[0] ')' ';'
@@ -63,8 +63,11 @@ term: term op=('*'|'/') fator
     | fator
     ;
 
-fator:NUM
-    | ID;
+fator:  NUM
+      | ID
+      | '-' fator
+      | '!' fator
+      ;
 
 listaExprs: expr (',' expr)*
           ;

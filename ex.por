@@ -7,10 +7,10 @@ PROG Serie1aN;
   ABC = 10;
 
   SE ( Y > Z ) ENTAO
-	INTEIRO NOVA = X;
+    INTEIRO NOVA = X, NOVA2, NOVA3=3+4;
     X = 50;
   SENAO
-	INTEIRO TEMP = X;
+    INTEIRO TEMP = X;
     X = 100;
   FIM;
 
