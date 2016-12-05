@@ -71,7 +71,8 @@ laco_repita: 'REPITA' bloco_principal 'ATE' '(' teste_logico ')' ';'
 laco_enquanto: 'ENQUANTO' '(' teste_logico ')' 'FACA' bloco_principal 'FIM' ';'
         ;
 
-laco_para: 'PARA' ID '=' (ID|NUM) 'ATE' (ID|NUM) ('PASSO' (ID|NUM))? 'FACA' bloco_principal 'FIM' ';'
+laco_para: 'PARA' ID '=' (expr|chamada_func_simples) 'ATE' (expr|chamada_func_simples) 
+          ('PASSO' (expr|chamada_func_simples))? 'FACA' bloco_principal 'FIM' ';'
          ;
 
 comandos: atribuicao ';'
