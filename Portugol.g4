@@ -53,12 +53,6 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
               ;
 
-comandos: dec_vars
-		    | atribuicao ';'
-        | chamada_func
-        | condicional
-        ;
-
 atribuicao: ID '=' expr (',' ID '=' expr)*
           ;
 
@@ -70,6 +64,23 @@ impressao: 'IMPRIMA' '(' lista_parametros ')' ';'
 
 condicional: 'SE' '(' teste_logico ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
             ;
+
+laco_repita: 'REPITA' bloco_principal 'ATE' '(' teste_logico ')' ';'
+      ;
+
+laco_enquanto: 'ENQUANTO' '(' teste_logico ')' 'FACA' bloco_principal 'FIM' ';'
+        ;
+
+laco_para: 'PARA' ID '=' (ID|NUM) 'ATE' (ID|NUM) ('PASSO' (ID|NUM))? 'FACA' bloco_principal 'FIM' ';'
+         ;
+
+comandos: atribuicao ';'
+        | chamada_func
+        | condicional
+        | laco_repita
+        | laco_enquanto
+        | laco_para
+        ;
 
 expr: expr op=('+'|'-') term
     | term
