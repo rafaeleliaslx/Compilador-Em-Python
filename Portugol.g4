@@ -1,59 +1,75 @@
 grammar Portugol;
 
-programa: 'PROG' ID ';' decVars* decFunc? blocoPrincipal 'FIM' '.'
+programa: 'PROG' ID ';' dec_vars? dec_func? bloco_principal 'FIM' '.'
         ;
 
-decVars: tipo listaIDs[$tipo.tip] ';'
+dec_vars: (variavel ';')+
+        ;
+
+variavel: tipo lista_ids
        ;
-tipo returns [int tip]
-    : 'INTEIRO'  {$tip=1;}
-    | 'REAL'     {$tip=2;}
-    | 'BOOLEANO' {$tip=3;}
-    | 'STRING'   {$tip=4;}
+
+tipo: 'INTEIRO' 
+    | 'REAL'    
+    | 'BOOLEANO'
+    | 'STRING'  
     ;
-listaIDs[int tip]: ( ID | atribuicao ) (',' ( ID | atribuicao ) )*
+
+lista_ids: ID (',' ID)*
         ;
 
-decFunc: 'FUNCAO' ID '(' listaParamentros? ')' ( ':' tipo ) ? ';' decVars? 
-         blocoPrincipal ( 'retorne' expr)? 'FIM' ';'
+dec_func: (func)+
+        ;
+
+func: 'FUNCAO' ID '(' dec_parametros? ')' ( ':' tipo ) ? ';' 
+        dec_vars? 
+        bloco_principal 
+        retorno? 
+        'FIM' ';'
        ;
 
-listaParamentros: (decVars)(';' decVars)*
+chamada_func: ID '(' lista_parametros ')' ';'
+            | leitura
+            | impressao
+            ;
+
+chamada_func_simples: ID '(' lista_parametros ')'
+                    ;
+
+lista_parametros: (STRING|expr|chamada_func_simples|teste_logico) (',' lista_parametros)*
+                ;
+
+teste_logico: (expr|chamada_func_simples) (LOGIC_OPERADORES teste_logico)*
+            | '!' '(' teste_logico ')' (LOGIC_OPERADORES teste_logico)*
+            | '!' teste_logico (LOGIC_OPERADORES teste_logico)*
+            ;
+
+retorno: 'RETORNE' (expr|STRING|chamada_func_simples) ';'
+      ;
+
+dec_parametros: variavel (';' variavel)*
                 ; 
 
-blocoPrincipal: comandos+
+bloco_principal: (comandos)*
               ;
 
-comandos: decVars
+comandos: dec_vars
 		    | atribuicao ';'
-        | leitura
-        | impressao
+        | chamada_func
         | condicional
-    ;
+        ;
 
 atribuicao: ID '=' expr (',' ID '=' expr)*
           ;
 
-leitura: 'LEIA' '(' listaIDs[0] ')' ';'
+leitura: 'LEIA' '(' lista_parametros ')' ';'
        ;
 
-impressao: 'IMPRIMA' '(' listaExprs ')' ';'
+impressao: 'IMPRIMA' '(' lista_parametros ')' ';'
          ;
 
-condicional: 'SE' '(' condicao ')' 'ENTAO' blocoPrincipal ('SENAO' blocoPrincipal)? 'FIM' ';'
+condicional: 'SE' '(' teste_logico ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
             ;
-
-condicao: ID
-        | '!'ID
-        | ID '&' ID
-        | ID '|' ID
-        | expr '>' expr
-        | expr '<' expr
-        | expr '>=' expr
-        | expr '<=' expr
-        | expr '==' expr
-        | expr '!=' expr
-        ;
 
 expr: expr op=('+'|'-') term
     | term
@@ -67,15 +83,28 @@ fator:  NUM
       | ID
       | '-' fator
       | '!' fator
+      | '(' expr ')'
+      | chamada_func_simples
       ;
 
-listaExprs: expr (',' expr)*
-          ;
+LOGIC_OPERADORES: '>'
+                | '<'
+                | '<='
+                | '>='
+                | '=='
+                | '!='
+                | '&'
+                | '|'
+                ;
 
 ID: [a-zA-Z][a-zA-Z0-9]*
   ;
 
+
 NUM: [0-9]+('.'[0-9]+)?
    ;
+
+STRING: '\"' ([^"])* '\"'
+      ;
 
 WS: [ \t\r\n] -> skip;
