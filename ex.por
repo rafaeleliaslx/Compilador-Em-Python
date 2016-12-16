@@ -9,6 +9,10 @@ PROG Serie1aN;
     RETORNE MEDIA;
   FIM;
 
+  FUNCAO MEUNOME(STRING NOME);
+    IMPRIMA(NOME);
+  FIM;
+
   LEIA(X, Y, Z, X);
   ABC = 10;
 

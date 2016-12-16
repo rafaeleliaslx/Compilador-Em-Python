@@ -20,7 +20,6 @@ class AcoesSemanticas(PortugolListener):
     tab_simb = {}
 
     def enterVariavel(self, ctx:PortugolParser.VariavelContext):
-        # import pdb; pdb.set_trace()
 
         tipo = ctx.tipo().getText()
 
@@ -56,8 +55,8 @@ def print_arvore(arv):
 
 
 def main(argv):
-    input = FileStream(argv[1])
-    lexer = PortugolLexer(input)
+    arq = FileStream(argv[1])
+    lexer = PortugolLexer(arq)
     stream = CommonTokenStream(lexer)
     parser = PortugolParser(stream)
     tree = parser.programa()
@@ -65,9 +64,10 @@ def main(argv):
     acoes = AcoesSemanticas()
     walker = ParseTreeWalker()
     walker.walk(acoes, tree)
-    
-    print("\n"+"*"*15+" ÁRVORE "+"*"*15)
-    print_arvore(Trees.toStringTree(tree, None, parser))
+
+    if input("\nImprime arvore? (s/n) >> ").upper() == 'S':
+        print("\n"+"*"*15+" ÁRVORE "+"*"*15)
+        print_arvore(Trees.toStringTree(tree, None, parser))
 
 if __name__ == '__main__':
     main(sys.argv)
