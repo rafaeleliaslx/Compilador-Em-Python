@@ -53,7 +53,7 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
               ;
 
-atribuicao: ID '=' expr (',' ID '=' expr)*
+atribuicao: ID '=' (expr|STRING) (',' ID '=' (expr|STRING))*
           ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
@@ -116,7 +116,7 @@ ID: [a-zA-Z][a-zA-Z0-9]*
 NUM: [0-9]+('.'[0-9]+)?
    ;
 
-STRING: '\"' ([^"])* '\"'
+STRING: '"' [^"][^"]* '"'
       ;
 
 WS: [ \t\r\n] -> skip;

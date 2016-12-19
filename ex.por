@@ -15,6 +15,7 @@ PROG Serie1aN;
 
   LEIA(X, Y, Z, X);
   ABC = 10;
+  S1 = "ESTE EH UM TESTE";
 
   SE ( ! (Y > Z) ) ENTAO
     X = 50;
