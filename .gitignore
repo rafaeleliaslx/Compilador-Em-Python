@@ -7,3 +7,4 @@ PortugolLexer.py
 PortugolLexer.tokens
 PortugolListener.py
 PortugolParser.py
+PortugolVisitor.py
