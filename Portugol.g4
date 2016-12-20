@@ -81,8 +81,11 @@ comandos: atribuicao ';'
         | laco_repita
         | laco_enquanto
         | laco_para
-        | SAIR
+        | sair
         ;
+
+sair: 'SAIR' ';'
+    ;
 
 expr: expr op=('+'|'-') term
     | term
