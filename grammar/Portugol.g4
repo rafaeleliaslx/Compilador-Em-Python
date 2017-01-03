@@ -36,15 +36,15 @@ chamada_func: ID '(' lista_parametros ')' ';'
 chamada_func_simples: ID '(' lista_parametros ')'
                     ;
 
-lista_parametros: (STRING|expr|chamada_func_simples|teste_logico) (',' lista_parametros)*
+lista_parametros: (STRING|bolean|chamada_func_simples|teste_logico) (',' lista_parametros)*
                 ;
 
-teste_logico: (expr|chamada_func_simples) (LOGIC_OPERADORES teste_logico)*
+teste_logico: (bolean|chamada_func_simples) (LOGIC_OPERADORES teste_logico)*
             | '!' '(' teste_logico ')' (LOGIC_OPERADORES teste_logico)*
             | '!' teste_logico (LOGIC_OPERADORES teste_logico)*
             ;
 
-retorno: 'RETORNE' (expr|STRING|chamada_func_simples) ';'
+retorno: 'RETORNE' (bolean|STRING|chamada_func_simples) ';'
       ;
 
 dec_parametros: variavel (';' variavel)*
@@ -53,7 +53,7 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
               ;
 
-atribuicao: ID '=' (expr|STRING) (',' ID '=' (expr|STRING))*
+atribuicao: ID '=' (bolean|STRING) (',' ID '=' (bolean|STRING))*
           ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
@@ -62,17 +62,17 @@ leitura: 'LEIA' '(' lista_parametros ')' ';'
 impressao: 'IMPRIMA' '(' lista_parametros ')' ';'
          ;
 
-condicional: 'SE' '(' teste_logico ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
+condicional: 'SE' '(' bolean ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
             ;
 
-laco_repita: 'REPITA' bloco_principal 'ATE' '(' teste_logico ')' ';'
+laco_repita: 'REPITA' bloco_principal 'ATE' '(' bolean ')' ';'
       ;
 
-laco_enquanto: 'ENQUANTO' '(' teste_logico ')' 'FACA' bloco_principal 'FIM' ';'
+laco_enquanto: 'ENQUANTO' '(' bolean ')' 'FACA' bloco_principal 'FIM' ';'
         ;
 
-laco_para: 'PARA' ID '=' (expr|chamada_func_simples) 'ATE' (expr|chamada_func_simples) 
-          ('PASSO' (expr|chamada_func_simples))? 'FACA' bloco_principal 'FIM' ';'
+laco_para: 'PARA' ID '=' (bolean|chamada_func_simples) 'ATE' (bolean|chamada_func_simples) 
+          ('PASSO' (bolean|chamada_func_simples))? 'FACA' bloco_principal 'FIM' ';'
          ;
 
 comandos: atribuicao ';'
@@ -87,20 +87,45 @@ comandos: atribuicao ';'
 sair: 'SAIR' ';'
     ;
 
+bolean: bolean '||' join 
+    | join
+    ;
+
+join: join '&&' equality 
+    | equality
+    ;
+
+equality: equality '==' rel 
+    | equality '!=' rel
+    | rel
+    ;
+
+rel: expr '>' expr
+    | expr '<' expr
+    | expr '>=' expr
+    | expr '<=' expr 
+    | expr
+    ;
+
 expr: expr op=('+'|'-') term
     | term
     ;
 
-term: term op=('*'|'/') fator
-    | fator
+term: term op=('*'|'/') unary
+    | unary
     ;
 
-fator:  NUM
+unary: '!' unary
+    | '-' unary
+    | factor
+    ;
+
+factor: NUM
       | ID
-      | '-' fator
-      | '!' fator
-      | '(' expr ')'
+      | '(' bolean ')'
       | chamada_func_simples
+      | 'true'
+      | 'false'
       ;
 
 LOGIC_OPERADORES: '>'
