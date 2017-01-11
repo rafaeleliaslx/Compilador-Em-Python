@@ -53,7 +53,7 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
               ;
 
-atribuicao: ID '=' (expr|STRING) (',' ID '=' (expr|STRING))*
+atribuicao: ID '=' (expr) (',' ID '=' (expr))*
           ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
@@ -101,6 +101,7 @@ fator:  NUM
       | '!' fator
       | '(' expr ')'
       | chamada_func_simples
+      | STRING
       ;
 
 LOGIC_OPERADORES: '>'
