@@ -13,8 +13,8 @@ PROG Teste2;
                 SOMA = SOMA + I;
             FIM;
         FIM;
-    IMPRIMA (SOMA);
-    IMPRIMA (“Deseja continuar? (-1 para Sair)”);
-    LEIA (OPCAO);
-    ATE (OPCAO==-1)
+        IMPRIMA (SOMA);
+        IMPRIMA (“Deseja continuar? (-1 para Sair)”);
+        LEIA (OPCAO);
+    ATE (OPCAO == -1)
 FIM.

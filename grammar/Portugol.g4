@@ -36,15 +36,10 @@ chamada_func: ID '(' lista_parametros ')' ';'
 chamada_func_simples: ID '(' lista_parametros ')'
                     ;
 
-lista_parametros: (STRING|expr|chamada_func_simples|teste_logico) (',' lista_parametros)*
+lista_parametros: (STRING|boolean|chamada_func_simples) (',' lista_parametros)*
                 ;
 
-teste_logico: (expr|chamada_func_simples) (LOGIC_OPERADORES teste_logico)*
-            | '!' '(' teste_logico ')' (LOGIC_OPERADORES teste_logico)*
-            | '!' teste_logico (LOGIC_OPERADORES teste_logico)*
-            ;
-
-retorno: 'RETORNE' (expr|STRING|chamada_func_simples) ';'
+retorno: 'RETORNE' (boolean|STRING|chamada_func_simples) ';'
       ;
 
 dec_parametros: variavel (';' variavel)*
@@ -53,7 +48,7 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
               ;
 
-atribuicao: ID '=' (expr) (',' ID '=' (expr))*
+atribuicao: ID '=' (boolean|STRING) (',' ID '=' (boolean|STRING))*
           ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
@@ -62,17 +57,17 @@ leitura: 'LEIA' '(' lista_parametros ')' ';'
 impressao: 'IMPRIMA' '(' lista_parametros ')' ';'
          ;
 
-condicional: 'SE' '(' teste_logico ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
+condicional: 'SE' '(' boolean ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
             ;
 
-laco_repita: 'REPITA' bloco_principal 'ATE' '(' teste_logico ')' ';'
+laco_repita: 'REPITA' bloco_principal 'ATE' '(' boolean ')' ';'
       ;
 
-laco_enquanto: 'ENQUANTO' '(' teste_logico ')' 'FACA' bloco_principal 'FIM' ';'
+laco_enquanto: 'ENQUANTO' '(' boolean ')' 'FACA' bloco_principal 'FIM' ';'
         ;
 
-laco_para: 'PARA' ID '=' (expr|chamada_func_simples) 'ATE' (expr|chamada_func_simples) 
-          ('PASSO' (expr|chamada_func_simples))? 'FACA' bloco_principal 'FIM' ';'
+laco_para: 'PARA' ID '=' (boolean|chamada_func_simples) 'ATE' (boolean|chamada_func_simples) 
+          ('PASSO' (boolean|chamada_func_simples))? 'FACA' bloco_principal 'FIM' ';'
          ;
 
 comandos: atribuicao ';'
@@ -87,21 +82,45 @@ comandos: atribuicao ';'
 sair: 'SAIR' ';'
     ;
 
+boolean: boolean '|' join 
+    | join
+    ;
+
+join: join '&' equality 
+    | equality
+    ;
+
+equality: equality '=' rel 
+    | equality '!=' rel
+    | rel
+    ;
+
+rel: expr '>' expr
+    | expr '<' expr
+    | expr '>=' expr
+    | expr '<=' expr 
+    | expr
+    ;
+
 expr: expr op=('+'|'-') term
     | term
     ;
 
-term: term op=('*'|'/') fator
-    | fator
+term: term op=('*'|'/') unary
+    | unary
     ;
 
-fator:  NUM
+unary: '!' unary
+    | '-' unary
+    | factor
+    ;
+
+factor: NUM
       | ID
-      | '-' fator
-      | '!' fator
-      | '(' expr ')'
+      | '(' boolean ')'
       | chamada_func_simples
-      | STRING
+      | 'true'
+      | 'false'
       ;
 
 LOGIC_OPERADORES: '>'
