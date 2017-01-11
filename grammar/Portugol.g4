@@ -90,7 +90,7 @@ join: join '&' equality
     | equality
     ;
 
-equality: equality '=' rel 
+equality: equality '==' rel 
     | equality '!=' rel
     | rel
     ;
@@ -115,7 +115,7 @@ unary: '!' unary
     | factor
     ;
 
-factor: NUM
+factor returns [String _tipo] : NUM
       | ID
       | '(' boolean ')'
       | chamada_func_simples
@@ -144,3 +144,11 @@ STRING: '"' (~['"']|WS)* '"'
       ;
 
 WS: [ \t\r\n] -> skip;
+
+COMMENT
+    : '/*' .*? '*/' -> skip
+    ;
+
+LINE_COMMENT
+    : '//' ~[\r\n]* -> skip
+    ;
