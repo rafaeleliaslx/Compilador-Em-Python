@@ -82,40 +82,48 @@ comandos: atribuicao ';'
 sair: 'SAIR' ';'
     ;
 
-boolean: boolean '|' join 
+boolean returns [String _tipo]
+    : boolean '|' join 
     | join
     ;
 
-join: join '&' equality 
+join returns [String _tipo]
+    : join '&' equality 
     | equality
     ;
 
-equality: equality '==' rel 
+equality returns [String _tipo]
+    : equality '==' rel 
     | equality '!=' rel
     | rel
     ;
 
-rel: expr '>' expr
+rel returns [String _tipo]
+    : expr '>' expr
     | expr '<' expr
     | expr '>=' expr
     | expr '<=' expr 
     | expr
     ;
 
-expr: expr op=('+'|'-') term
+expr returns [String _tipo]
+    : expr op=('+'|'-') term
     | term
     ;
 
-term: term op=('*'|'/') unary
+term returns [String _tipo]
+    : term op=('*'|'/') unary
     | unary
     ;
 
-unary: '!' unary
+unary returns [String _tipo]
+    : '!' unary
     | '-' unary
     | factor
     ;
 
-factor returns [String _tipo] : NUM
+factor returns [String _tipo]
+      : NUM
       | ID
       | '(' boolean ')'
       | chamada_func_simples

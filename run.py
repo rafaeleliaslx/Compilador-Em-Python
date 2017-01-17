@@ -14,9 +14,9 @@ def print_arvore(arv):
     for i in arv:
         if i == '(':
             tabs = tabs+1
-            new_arv+=i+'\n'+(tabs*'\t')
+            new_arv+=i+'\n'+(tabs*' ')
         elif i == ')':
-            new_arv+='\n'+(tabs*'\t')+i+'\n'+(tabs*'\t')
+            new_arv+='\n'+(tabs*' ')+i+'\n'+(tabs*' ')
             tabs = tabs-1
         else:
             new_arv +=i
@@ -34,9 +34,11 @@ def main(argv):
     walker = ParseTreeWalker()
     walker.walk(acoes, tree)
 
-    if input("\nImprime arvore? (s/n) >> ").upper() == 'S':
-        print("\n"+"*"*15+" ÁRVORE "+"*"*15)
-        print_arvore(Trees.toStringTree(tree, None, parser))
+    try:
+        if argv[2] == 'p':
+            print_arvore(Trees.toStringTree(tree, None, parser))
+    except:
+        pass
 
 if __name__ == '__main__':
     main(sys.argv)
