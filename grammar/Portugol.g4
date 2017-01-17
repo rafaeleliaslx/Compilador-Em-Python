@@ -1,13 +1,16 @@
 grammar Portugol;
 
-programa: 'PROG' ID ';' dec_vars? dec_func? bloco_principal 'FIM' '.'
-        ;
+programa: 'PROG' ID ';' 
+    dec_vars? 
+    dec_func? 
+    bloco_principal 'FIM' '.'
+    ;
 
 dec_vars: (variavel ';')+
-        ;
+    ;
 
 variavel: tipo lista_ids
-       ;
+    ;
 
 tipo: 'INTEIRO' 
     | 'REAL'    
@@ -16,68 +19,76 @@ tipo: 'INTEIRO'
     ;
 
 lista_ids: ID (',' ID)*
-        ;
+    ;
 
 dec_func: (func)+
-        ;
+    ;
 
 func: 'FUNCAO' ID '(' dec_parametros? ')' ( ':' tipo ) ? ';' 
-        dec_vars? 
-        bloco_principal 
-        retorno? 
-        'FIM' ';'
-       ;
+    dec_vars? 
+    bloco_principal 
+    retorno? 
+    'FIM' ';'
+    ;
 
 chamada_func: ID '(' lista_parametros ')' ';'
-            | leitura
-            | impressao
-            ;
+    | leitura
+    | impressao
+    ;
 
 chamada_func_simples: ID '(' lista_parametros ')'
-                    ;
+    ;
 
 lista_parametros: (STRING|boolean|chamada_func_simples) (',' lista_parametros)*
-                ;
+    ;
 
 retorno: 'RETORNE' (boolean|STRING|chamada_func_simples) ';'
-      ;
+    ;
 
 dec_parametros: variavel (';' variavel)*
-                ; 
+    ; 
 
 bloco_principal: (comandos)*
-              ;
+    ;
 
 atribuicao: ID '=' (boolean|STRING) (',' ID '=' (boolean|STRING))*
-          ;
+    ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
-       ;
+    ;
 
 impressao: 'IMPRIMA' '(' lista_parametros ')' ';'
-         ;
+    ;
 
-condicional: 'SE' '(' boolean ')' 'ENTAO' bloco_principal ('SENAO' bloco_principal)? 'FIM' ';'
-            ;
+condicional: 'SE' '(' boolean ')' 
+    'ENTAO' bloco_principal 
+    ('SENAO' bloco_principal)? 
+    'FIM' ';'
+    ;
 
-laco_repita: 'REPITA' bloco_principal 'ATE' '(' boolean ')' ';'
-      ;
+laco_repita: 'REPITA' bloco_principal 
+    'ATE' '(' boolean ')' ';'
+    ;
 
-laco_enquanto: 'ENQUANTO' '(' boolean ')' 'FACA' bloco_principal 'FIM' ';'
-        ;
+laco_enquanto: 'ENQUANTO' '(' boolean ')' 
+    'FACA' bloco_principal 
+    'FIM' ';'
+    ;
 
-laco_para: 'PARA' ID '=' (boolean|chamada_func_simples) 'ATE' (boolean|chamada_func_simples) 
-          ('PASSO' (boolean|chamada_func_simples))? 'FACA' bloco_principal 'FIM' ';'
-         ;
+laco_para: 'PARA' ID '=' (boolean|chamada_func_simples) 
+    'ATE' (boolean|chamada_func_simples) 
+    ('PASSO' (boolean|chamada_func_simples))? 
+    'FACA' bloco_principal 'FIM' ';'
+    ;
 
 comandos: atribuicao ';'
-        | chamada_func
-        | condicional
-        | laco_repita
-        | laco_enquanto
-        | laco_para
-        | sair
-        ;
+    | chamada_func
+    | condicional
+    | laco_repita
+    | laco_enquanto
+    | laco_para
+    | sair
+    ;
 
 sair: 'SAIR' ';'
     ;
@@ -122,41 +133,23 @@ unary returns [String _tipo]
     | factor
     ;
 
-factor returns [String _tipo]
-      : NUM
-      | ID
-      | '(' boolean ')'
-      | chamada_func_simples
-      | 'true'
-      | 'false'
-      ;
-
-LOGIC_OPERADORES: '>'
-                | '<'
-                | '<='
-                | '>='
-                | '=='
-                | '!='
-                | '&'
-                | '|'
-                ;
+factor: NUM
+    | ID
+    | '(' boolean ')'
+    | chamada_func_simples
+    | 'true'
+    | 'false'
+    ;
 
 ID: [a-zA-Z][a-zA-Z0-9]*
-  ;
+    ;
 
 
 NUM: [0-9]+('.'[0-9]+)?
-   ;
-
-STRING: '"' (~['"']|WS)* '"'
-      ;
-
-WS: [ \t\r\n] -> skip;
-
-COMMENT
-    : '/*' .*? '*/' -> skip
     ;
 
-LINE_COMMENT
-    : '//' ~[\r\n]* -> skip
+STRING: '"' (~['"']|WS)* '"'
+    ;
+
+WS: [ \t\r\n] -> skip
     ;
