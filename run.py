@@ -5,8 +5,30 @@ from grammar.PortugolLexer import PortugolLexer
 from grammar.PortugolParser import PortugolParser
 from grammar.PortugolListener import PortugolListener
 from antlr4.tree.Trees import Trees
+from antlr4.error.ErrorListener import ErrorListener
 
 from models import AcoesSemanticas, Variavel
+
+
+class MyErrorListener( ErrorListener ):
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        print( str(line) + ":" + str(column) + ": sintax ERROR, " + str(msg))
+        print( "Terminating Translation")
+        # sys.exit()
+
+    def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+        print( "Ambiguity ERROR, " + str(configs))
+        # sys.exit()
+
+    def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+        pass
+        # print( "Attempting full context ERROR, " + str(configs))
+        # sys.exit()
+
+    def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+        print( "Context ERROR, " + str(configs))
+        # sys.exit()
+
 
 def print_arvore(arv):
     tabs = 0
@@ -24,15 +46,23 @@ def print_arvore(arv):
 
 
 def main(argv):
-    arq = FileStream(argv[1])
-    lexer = PortugolLexer(arq)
-    stream = CommonTokenStream(lexer)
-    parser = PortugolParser(stream)
-    tree = parser.programa()
+    try:
+        errors = MyErrorListener()
 
-    acoes = AcoesSemanticas()
-    walker = ParseTreeWalker()
-    walker.walk(acoes, tree)
+        arq = FileStream(argv[1])
+        lexer = PortugolLexer(arq)
+        stream = CommonTokenStream(lexer)
+        parser = PortugolParser(stream)
+        
+        parser._listeners = [errors]
+        
+        tree = parser.programa()
+
+        acoes = AcoesSemanticas()
+        walker = ParseTreeWalker()
+        walker.walk(acoes, tree)
+    except Exception as err:
+        print(err)
 
     try:
         if argv[2] == 'p':
