@@ -13,6 +13,8 @@ class AcoesSemanticas(PortugolListener):
     vars_list = []
     funcs_list = []
 
+    ERRORS = []
+
     def enterVariavel(self, ctx:PortugolParser.VariavelContext):
 
         if class_name(ctx.parentCtx.parentCtx).startswith('Programa'):
@@ -36,6 +38,7 @@ class AcoesSemanticas(PortugolListener):
                     self.vars_list.append(variavel)                    
             except Exception as err:
                 print(err)
+                self.ERRORS.append(err)
 
     def enterFunc(self, ctx:PortugolParser.Dec_funcContext):
         parametros = []
@@ -57,6 +60,7 @@ class AcoesSemanticas(PortugolListener):
                 self.funcs_list.append(Funcao(func_name, retorno, parametros))
         except Exception as err:
             print(err)
+            self.ERRORS.append(err)
 
 
 
@@ -64,12 +68,7 @@ class AcoesSemanticas(PortugolListener):
         pass
 
     def exitPrograma(self, ctx:PortugolParser.ProgramaContext):
-        print("\n"+"*"*10+" GLOBAIS "+"*"*10)
-        for i in self.funcs_list:
-            print(i)
-        print("\n"+"*"*10+" LOCAIS "+"*"*10)
-        for k,v in self.tab_simb.items():
-            print(k+': '+v.getText())
+        pass
 
 
 class Variavel():

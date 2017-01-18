@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import os
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -23,6 +24,8 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_rayide(object):
+    file_path = ""
+
     def setupUi(self, rayide):
         rayide.setObjectName(_fromUtf8("rayide"))
         rayide.resize(560, 397)
@@ -77,16 +80,46 @@ class Ui_rayide(object):
         self.splitter = QtGui.QSplitter(rayide)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName(_fromUtf8("splitter"))
-        self.plainTextEdit = QtGui.QPlainTextEdit(self.splitter)
-        self.plainTextEdit.setObjectName(_fromUtf8("plainTextEdit"))
         self.textEdit = QtGui.QTextEdit(self.splitter)
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
+        self.plainTextEdit = QtGui.QPlainTextEdit(self.splitter)
+        self.plainTextEdit.setObjectName(_fromUtf8("plainTextEdit"))
         self.verticalLayout.addWidget(self.splitter)
         self.gridLayout_2.addLayout(self.verticalLayout, 1, 0, 1, 1)
+
+        self.plainTextEdit.setReadOnly(True)
+
+        QtCore.QObject.connect(self.pushButton_3,QtCore.SIGNAL("clicked()"),self.save_clicked)
+        QtCore.QObject.connect(self.pushButton_2,QtCore.SIGNAL("clicked()"),self.open_clicked)
+        QtCore.QObject.connect(self.pushButton,QtCore.SIGNAL("clicked()"),self.run_clicked)
 
         self.retranslateUi(rayide)
         QtCore.QMetaObject.connectSlotsByName(rayide)
 
+    def open_clicked(self):
+        self.file_path = QtGui.QFileDialog.getOpenFileName(filter='Arquivos Portugol (*.por)', caption='Abrir Arquivo Portugol')
+        if self.file_path[-4:] == '.por':
+            file_por = open(self.file_path, 'r')
+            code_text = file_por.read()
+            file_por.close()
+            self.textEdit.setText(code_text)
+
+    def run_clicked(self):
+        result = ''
+        if self.file_path != "" and os.path.isfile(self.file_path):
+            result = os.popen("python3.5 run.py "+self.file_path).read()
+            if result == '':
+                result = 'Nenhum erro encontrado.'
+            self.plainTextEdit.setPlainText(result)
+
+    def save_clicked(self):
+        result = ''
+        if self.file_path != "" and os.path.isfile(self.file_path):
+            file_por = open(self.file_path, 'w')
+            file_por.write(self.textEdit.toPlainText())
+            file_por.close()
+
+
     def retranslateUi(self, rayide):
-        rayide.setWindowTitle(_translate("rayide", "rayide", None))
+        rayide.setWindowTitle(_translate("RayIDE", "RayIDE", None))
 
