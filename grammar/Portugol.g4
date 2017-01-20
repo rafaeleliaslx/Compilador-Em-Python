@@ -88,7 +88,17 @@ comandos: atribuicao
     | laco_enquanto
     | laco_para
     | sair
+    | COMMENT
+    | LINE_COMMENT
     ;
+
+COMMENT
+    : '/*' .*? '*/' -> skip
+;
+
+LINE_COMMENT
+    : '//' ~[\r\n]* -> skip
+;
 
 sair: 'SAIR' ';'
     ;

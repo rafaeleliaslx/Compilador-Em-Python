@@ -1,12 +1,13 @@
 PROG Teste1;
     INTEIRO N1, N2, a, b, MEDIA;
     BOOLEANO c;
+//teste 
 
-
-    FUNCAO MEDIA(REAL S1,S2,S3;INTEIRO X):REAL;
+    FUNCAO MEDIA(REAL S1,S2,S3;INTEIRO X):REAL; //teste
         INTEIRO N1;
-        BOOLEANO N6;
-        RETORNE (S1+S2+S3)/X+FUNC("A",B,C,D);
+        BOOLEANO N1; 
+        RETORNE (S1+S2+S3)/X;
+
     FIM;
 
     FUNCAO MEDIA3(REAL D1,D2,D3;INTEIRO U):REAL;
