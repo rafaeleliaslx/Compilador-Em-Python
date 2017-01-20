@@ -51,7 +51,7 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
     ;
 
-atribuicao: ID '=' (boolean|STRING) (',' ID '=' (boolean|STRING))*
+atribuicao: ID '=' (boolean|STRING) (',' atribuicao)*
     ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
