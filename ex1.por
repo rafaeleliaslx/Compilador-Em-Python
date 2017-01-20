@@ -7,6 +7,7 @@ PROG Teste1;
         INTEIRO N1;
         BOOLEANO N1; 
         RETORNE (S1+S2+S3)/X;
+
     FIM;
 
     FUNCAO MEDIA(REAL D1,D2,D3;INTEIRO U):REAL;

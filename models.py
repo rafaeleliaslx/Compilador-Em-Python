@@ -2,6 +2,7 @@
 
 from grammar.PortugolListener import PortugolListener
 from grammar.PortugolParser import PortugolParser
+from antlr4.error.ErrorListener import ErrorListener
 from errors import *
 
 
@@ -30,12 +31,14 @@ class AcoesSemanticas(PortugolListener):
         for var_nome in vars_nomes:
             variavel = Variavel(var_nome, tipo, parent)
             try:
-                if contains(self.vars_list, lambda var: var.nome == var_nome and var.parent == parent):
-                    raise JaDeclaradoError(class_name(variavel), var_nome, parent)
-                # elif contains(self.func_list, lambda var: var.nome == var_nome and var.parent == parent):
-                    # raise VariavelDeclaradaError(class_name(variavel), var_nome, tipo, parent)
-                else:
-                    self.vars_list.append(variavel)                    
+                ja_dec = contains(self.vars_list, lambda var: var.nome == var_nome and var.parent == parent)
+                if ja_dec:
+                    if not global_var and contains(get_from_id(parent, self.funcs_list).parametros,\
+                        lambda var: var.nome == var_nome) and not class_name(ctx.parentCtx).startswith('Dec_parametros'):
+                        raise JaDeclaradoParametroError(class_name(variavel), var_nome, parent)
+                    else:
+                        raise JaDeclaradoError(class_name(variavel), var_nome, parent)
+                self.vars_list.append(variavel)                    
             except Exception as err:
                 print(err)
                 self.ERRORS.append(err)
@@ -50,7 +53,6 @@ class AcoesSemanticas(PortugolListener):
         try:
             if contains(self.funcs_list, lambda fun: fun.nome == func_name):
                 raise JaDeclaradoError('Função', func_name, parent)
-                import pdb; pdb.set_trace()
             else:
                 for list_pars in func.dec_parametros().variavel():
                     tipo = list_pars.tipo().getText()
@@ -104,3 +106,30 @@ def contains(list, filter):
         if filter(x):
             return True
     return False
+
+def get_from_id(id, _list):
+    for i in _list:
+        if i.nome == id:
+            return i
+    else:
+        return False
+
+class MyErrorListener( ErrorListener ):
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        print( str(line) + ":" + str(column) + ": sintax ERROR, " + str(msg))
+        print( "Terminating Translation")
+        # sys.exit()
+
+    def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+        print( "Ambiguity ERROR, " + str(configs))
+        # sys.exit()
+
+    def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+        pass
+        # print( "Attempting full context ERROR, " + str(configs))
+        # sys.exit()
+
+    def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+        # print( "Context ERROR, " + str(configs))
+        print( "Context ERROR")
+        # sys.exit()

@@ -5,29 +5,8 @@ from grammar.PortugolLexer import PortugolLexer
 from grammar.PortugolParser import PortugolParser
 from grammar.PortugolListener import PortugolListener
 from antlr4.tree.Trees import Trees
-from antlr4.error.ErrorListener import ErrorListener
 
-from models import AcoesSemanticas, Variavel
-
-
-class MyErrorListener( ErrorListener ):
-    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        print( str(line) + ":" + str(column) + ": sintax ERROR, " + str(msg))
-        print( "Terminating Translation")
-        # sys.exit()
-
-    def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
-        print( "Ambiguity ERROR, " + str(configs))
-        # sys.exit()
-
-    def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
-        pass
-        # print( "Attempting full context ERROR, " + str(configs))
-        # sys.exit()
-
-    def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
-        print( "Context ERROR, " + str(configs))
-        # sys.exit()
+from models import AcoesSemanticas, Variavel, MyErrorListener
 
 
 def print_arvore(arv):
