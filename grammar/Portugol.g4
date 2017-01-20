@@ -31,12 +31,12 @@ func: 'FUNCAO' ID '(' dec_parametros? ')' ( ':' tipo ) ? ';'
     'FIM' ';'
     ;
 
-chamada_func: ID '(' lista_parametros ')' ';'
+chamada_func: ID '(' lista_parametros? ')' ';'
     | leitura
     | impressao
     ;
 
-chamada_func_simples: ID '(' lista_parametros ')'
+chamada_func_simples: ID '(' lista_parametros? ')'
     ;
 
 lista_parametros: (STRING|boolean|chamada_func_simples) (',' lista_parametros)*
@@ -51,7 +51,7 @@ dec_parametros: variavel (';' variavel)*
 bloco_principal: (comandos)*
     ;
 
-atribuicao: ID '=' (boolean|STRING) (',' atribuicao)*
+atribuicao: ID '=' (boolean|STRING) ';'
     ;
 
 leitura: 'LEIA' '(' lista_parametros ')' ';'
@@ -81,7 +81,7 @@ laco_para: 'PARA' ID '=' (boolean|chamada_func_simples)
     'FACA' bloco_principal 'FIM' ';'
     ;
 
-comandos: atribuicao ';'
+comandos: atribuicao
     | chamada_func
     | condicional
     | laco_repita

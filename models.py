@@ -3,18 +3,20 @@
 from grammar.PortugolListener import PortugolListener
 from grammar.PortugolParser import PortugolParser
 from antlr4.error.ErrorListener import ErrorListener
-from errors import *
+from utils.functions import *
+from utils import vartipo
+from utils.errors import *
 
 
 class AcoesSemanticas(PortugolListener):
-    tab_simb = {}
-    tab_simb_global = {}
-    tab_func = {}
 
     vars_list = []
     funcs_list = []
 
     ERRORS = []
+
+    def enterPrograma(self, ctx:PortugolParser.ProgramaContext):
+        self.prog_name = ctx.children[1].getText()
 
     def enterVariavel(self, ctx:PortugolParser.VariavelContext):
 
@@ -35,9 +37,9 @@ class AcoesSemanticas(PortugolListener):
                 if ja_dec:
                     if not global_var and contains(get_from_id(parent, self.funcs_list).parametros,\
                         lambda var: var.nome == var_nome) and not class_name(ctx.parentCtx).startswith('Dec_parametros'):
-                        raise JaDeclaradoParametroError(class_name(variavel), var_nome, parent)
+                        raise JaDeclaradoParametroError(class_name(variavel), var_nome, parent, ctx.stop.line)
                     else:
-                        raise JaDeclaradoError(class_name(variavel), var_nome, parent)
+                        raise JaDeclaradoError(class_name(variavel), var_nome, parent, ctx.stop.line)
                 self.vars_list.append(variavel)                    
             except Exception as err:
                 print(err)
@@ -52,7 +54,7 @@ class AcoesSemanticas(PortugolListener):
 
         try:
             if contains(self.funcs_list, lambda fun: fun.nome == func_name):
-                raise JaDeclaradoError('Função', func_name, parent)
+                raise JaDeclaradoError('Função', func_name, parent, ctx.stop.line)
             else:
                 for list_pars in func.dec_parametros().variavel():
                     tipo = list_pars.tipo().getText()
@@ -64,10 +66,22 @@ class AcoesSemanticas(PortugolListener):
             print(err)
             self.ERRORS.append(err)
 
+    def exitAtribuicao(self, ctx:PortugolParser.AtribuicaoContext):
+        parent = ctx.parentCtx.parentCtx.parentCtx.ID().getText()
+        tipo = check_ID(ctx.children[0].getText(), parent, self, ctx.stop.line)
+        if class_name(ctx.children[2]).startswith('Boolean'):
+            tipo_attr = check_boolean(ctx.children[2], parent, self)
+            if tipo == tipo_attr:
+                pass
+            else:
+                raise AtribuicaoErro(tipo, tipo_attr, ctx.stop.line)
+        if tipo == vartipo.STRING:
+            pass
+        else:
+            raise AtribuicaoErro(tipo, vartipo.STRING, ctx.stop.line)
 
 
-    def exitFactor(self, ctx:PortugolParser.FactorContext):
-        pass
+        # pass
 
     def exitPrograma(self, ctx:PortugolParser.ProgramaContext):
         pass
@@ -98,30 +112,15 @@ class Funcao():
         return str(self)
 
 
-def class_name(item):
-    return item.__class__.__name__
-
-def contains(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
-
-def get_from_id(id, _list):
-    for i in _list:
-        if i.nome == id:
-            return i
-    else:
-        return False
-
 class MyErrorListener( ErrorListener ):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         print( str(line) + ":" + str(column) + ": sintax ERROR, " + str(msg))
-        print( "Terminating Translation")
+        # print( "Terminating Translation")
         # sys.exit()
 
     def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
-        print( "Ambiguity ERROR, " + str(configs))
+        # print( "Ambiguity ERROR, " + str(configs))
+        print( "Erro de ambiguidade.")
         # sys.exit()
 
     def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
@@ -131,5 +130,5 @@ class MyErrorListener( ErrorListener ):
 
     def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
         # print( "Context ERROR, " + str(configs))
-        print( "Context ERROR")
+        print( "Erro de contexto")
         # sys.exit()

@@ -4,16 +4,19 @@ PROG Teste1;
 
 
     FUNCAO MEDIA(REAL S1,S2,S3;INTEIRO X):REAL;
-        INTEIRO N1, S1;
-        BOOLEANO N1;
-        RETORNE (S1+S2+S3+N1)/X;
+        INTEIRO N1;
+        BOOLEANO N6;
+        RETORNE (S1+S2+S3)/X+FUNC("A",B,C,D);
     FIM;
 
-    FUNCAO MEDIA(REAL D1,D2,D3;INTEIRO U):REAL;
+    FUNCAO MEDIA3(REAL D1,D2,D3;INTEIRO U):REAL;
         INTEIRO C1;
         BOOLEANO F1;
         RETORNE (D1+D2+D3)/X;
     FIM;
+
+    N1 = 10;
+    N2 = 10;
 
     REPITA
         X = A>0;
