@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from . import vartipo
 from .errors import *
+import resource, sys
+resource.setrlimit(resource.RLIMIT_STACK, (2**29,-1))
+sys.setrecursionlimit(10**6)
 
+temp = 0
 
 def check_boolean(boolean, parent, acoes):
     if len(boolean.children)==1:
@@ -57,14 +61,15 @@ def check_rel(rel, parent, acoes):
 def check_expr(expr, parent, acoes):
     if len(expr.children)==1:
         ret = check_term(expr.children[0], parent, acoes)
-        import pdb; pdb.set_trace()
         return ret
 
     expressao = check_expr(expr.children[0], parent, acoes)
     termo = check_term(expr.children[2], parent, acoes)
 
     if termo not in vartipo.NUM or expressao not in vartipo.NUM:
-        raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, term.stop.line)
+        raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, expr.stop.line)
+    return vartipo.FLOAT if expressao == vartipo.FLOAT or \
+    termo == vartipo.FLOAT else vartipo.INT
 
 
 def check_term(term, parent, acoes):
@@ -77,7 +82,8 @@ def check_term(term, parent, acoes):
 
     if termo not in vartipo.NUM or unario not in vartipo.NUM:
         raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, term.stop.line)
-
+    return vartipo.FLOAT if termo == vartipo.FLOAT or \
+    unario == vartipo.FLOAT else vartipo.INT
 
 def check_unary(unary, parent, acoes):
     if len(unary.children)==1:
@@ -106,7 +112,7 @@ def check_factor(factor, parent, acoes):
 
     f_txt = factor.children[0].getText()
 
-    if f_txt == 'true' or f_txt == 'false':
+    if f_txt == 'TRUE' or f_txt == 'FALSE':
         return vartipo.BOOL
 
     try:
@@ -191,3 +197,9 @@ def get_from_id(id, _list):
             return i
     else:
         return False
+
+def get_parent(ctx):
+    if hasattr(ctx.parentCtx,'ID'):
+        return ctx.parentCtx.ID().getText()
+    else:
+        return get_parent(ctx.parentCtx)

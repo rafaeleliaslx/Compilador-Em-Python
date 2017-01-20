@@ -5,8 +5,9 @@ from grammar.PortugolLexer import PortugolLexer
 from grammar.PortugolParser import PortugolParser
 from grammar.PortugolListener import PortugolListener
 from antlr4.tree.Trees import Trees
-
+import traceback
 from models import AcoesSemanticas, Variavel, MyErrorListener
+import os
 
 
 def print_arvore(arv):
@@ -29,6 +30,12 @@ def main(argv):
         errors = MyErrorListener()
 
         arq = FileStream(argv[1])
+        # arq2 = io.TextIOWrapper(write_through=False)
+        arq2 = open('temp.por', 'w')
+        arq2.write(arq.strdata.upper())
+        arq2.close()
+
+        arq = FileStream('temp.por')
         lexer = PortugolLexer(arq)
         stream = CommonTokenStream(lexer)
         parser = PortugolParser(stream)
@@ -42,6 +49,7 @@ def main(argv):
         walker.walk(acoes, tree)
     except Exception as err:
         print(err)
+    # traceback.print_exc()
 
     try:
         if argv[2] == 'p':

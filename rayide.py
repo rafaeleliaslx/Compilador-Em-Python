@@ -80,8 +80,11 @@ class Ui_rayide(object):
         self.splitter = QtGui.QSplitter(rayide)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName(_fromUtf8("splitter"))
+        
         self.textEdit = QtGui.QTextEdit(self.splitter)
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
+
+                
         self.plainTextEdit = QtGui.QPlainTextEdit(self.splitter)
         self.plainTextEdit.setObjectName(_fromUtf8("plainTextEdit"))
         self.verticalLayout.addWidget(self.splitter)
@@ -93,7 +96,6 @@ class Ui_rayide(object):
         QtCore.QObject.connect(self.pushButton_2,QtCore.SIGNAL("clicked()"),self.open_clicked)
         QtCore.QObject.connect(self.pushButton,QtCore.SIGNAL("clicked()"),self.run_clicked)
 
-        self.retranslateUi(rayide)
         QtCore.QMetaObject.connectSlotsByName(rayide)
 
     def open_clicked(self):
@@ -107,6 +109,7 @@ class Ui_rayide(object):
     def run_clicked(self):
         result = ''
         if self.file_path != "" and os.path.isfile(self.file_path):
+            self.save_clicked()
             result = os.popen("python3.5 run.py "+self.file_path).read()
             if result == '':
                 result = 'Nenhum erro encontrado.'
@@ -118,7 +121,16 @@ class Ui_rayide(object):
             file_por = open(self.file_path, 'w')
             file_por.write(self.textEdit.toPlainText())
             file_por.close()
-
+        else:
+            self.file_path = QtGui.QFileDialog.getSaveFileName(filter='Arquivos Portugol (*.por)', caption='Salvar Arquivo Portugol')
+            print(name)
+            if self.file_path:
+                file_por = open(self.file_path,'w')
+                text = self.textEdit.toPlainText()
+                file_por.write(text)
+                file_por.close()
+            else:
+                return
 
     def retranslateUi(self, rayide):
         rayide.setWindowTitle(_translate("RayIDE", "RayIDE", None))

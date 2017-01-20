@@ -47,7 +47,7 @@ class AcoesSemanticas(PortugolListener):
 
     def enterFunc(self, ctx:PortugolParser.Dec_funcContext):
         parametros = []
-        parent = ctx.parentCtx.parentCtx.ID().getText()
+        parent = get_parent(ctx)
         func = ctx
         func_name = func.ID().getText()
         retorno = func.tipo().getText() if func.tipo() else ""
@@ -67,21 +67,46 @@ class AcoesSemanticas(PortugolListener):
             self.ERRORS.append(err)
 
     def exitAtribuicao(self, ctx:PortugolParser.AtribuicaoContext):
-        parent = ctx.parentCtx.parentCtx.parentCtx.ID().getText()
+        parent = get_parent(ctx)
         tipo = check_ID(ctx.children[0].getText(), parent, self, ctx.stop.line)
+        tipo_attr = ''
         if class_name(ctx.children[2]).startswith('Boolean'):
             tipo_attr = check_boolean(ctx.children[2], parent, self)
-            if tipo == tipo_attr:
-                pass
-            else:
-                raise AtribuicaoErro(tipo, tipo_attr, ctx.stop.line)
+        if class_name(ctx.children[2]).startswith('Chama'):
+            tipo_attr = check_chamada_func_simples(ctx.children[2], parent, self)
+        if tipo == tipo_attr or (tipo==vartipo.FLOAT and tipo_attr==vartipo.INT):
+            return
+        else:
+            raise AtribuicaoErro(tipo, tipo_attr, ctx.stop.line)
+
         if tipo == vartipo.STRING:
-            pass
+            return
         else:
             raise AtribuicaoErro(tipo, vartipo.STRING, ctx.stop.line)
 
+    def exitRetorno(self, ctx:PortugolParser.RetornoContext):
+        parent = get_parent(ctx)
+        parent_obj = get_from_id(parent, self.funcs_list)
+        tipo = parent_obj.tipo
+        # tipo = check_ID(ctx.children[0].getText(), parent, self, ctx.stop.line)
+        tipo_attr = ''
+        if class_name(ctx.children[1]).startswith('Boolean'):
+            tipo_attr = check_boolean(ctx.children[1], parent, self)
+        if class_name(ctx.children[1]).startswith('Chama'):
+            tipo_attr = check_chamada_func_simples(ctx.children[1], parent, self)
+        if tipo == tipo_attr or (tipo==vartipo.FLOAT and tipo_attr==vartipo.INT):
+            return
+        else:
+            raise AtribuicaoErro(tipo, tipo_attr, ctx.stop.line)
 
-        # pass
+        if tipo == vartipo.STRING:
+            return
+        else:
+            raise AtribuicaoErro(tipo, vartipo.STRING, ctx.stop.line)
+
+    def exitChamada_func(self, ctx:PortugolParser.Chamada_funcContext):
+        import pdb; pdb.set_trace()
+
 
     def exitPrograma(self, ctx:PortugolParser.ProgramaContext):
         pass
@@ -120,8 +145,9 @@ class MyErrorListener( ErrorListener ):
 
     def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
         # print( "Ambiguity ERROR, " + str(configs))
-        print( "Erro de ambiguidade.")
+        # print( "Erro de ambiguidade.")
         # sys.exit()
+        pass
 
     def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
         pass
@@ -130,5 +156,6 @@ class MyErrorListener( ErrorListener ):
 
     def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
         # print( "Context ERROR, " + str(configs))
-        print( "Erro de contexto")
+        # print( "Erro de contexto")
         # sys.exit()
+        pass
