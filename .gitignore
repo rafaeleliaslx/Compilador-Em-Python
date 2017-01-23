@@ -7,4 +7,4 @@ PortugolLexer.tokens
 PortugolListener.py
 PortugolParser.py
 PortugolVisitor.py
-temp.por
+*.por

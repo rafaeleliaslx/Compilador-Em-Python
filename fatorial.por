@@ -4,11 +4,12 @@ PROG FATORIAL;
         RESULTADO = 1;
         LEIA(X);
         SE (X < 0) ENTAO
-        	IMPRIMA ("DIGITE UM NUMERO NÃO NEGATIVO");
+        	IMPRIMA ("DIGITE UM NUMERO NAO NEGATIVO");
         SENAO
         	SE (X > 0) ENTAO
             	PARA I = 1 ATE X FACA
-                	RESULTADO = RESUTADO * I;
+                	RESULTADO = RESULTADO * I;
+                FIM;
         	FIM;
         	SE (X == 0) ENTAO
         		RESULTADO = 1;

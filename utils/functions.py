@@ -2,10 +2,17 @@
 from . import vartipo
 from .errors import *
 import resource, sys
-resource.setrlimit(resource.RLIMIT_STACK, (2**29,-1))
-sys.setrecursionlimit(10**6)
 
-temp = 0
+
+def check_lista_ids(lista_ids, parent, acoes):
+    pass
+
+def check_STRING(string, parent, acoes):
+    txt = string.getText()
+    if txt[0] == '"' and txt[len(txt)-1]:
+        return vartipo.STRING
+    else:
+        raise CustomError("String inválida.",string.start.line, string.start.column)
 
 def check_boolean(boolean, parent, acoes):
     if len(boolean.children)==1:
@@ -17,7 +24,7 @@ def check_boolean(boolean, parent, acoes):
     if junta == vartipo.BOOL and booleano == vartipo.BOOL:
         return vartipo.BOOL
     else:
-        raise EraEsperado(vartipo.BOOL+' e '+vartipo.BOOL, join.stop.line)
+        raise EraEsperado(vartipo.BOOL+' e '+vartipo.BOOL, boolean.start.line, boolean.start.column)
 
 
 def check_join(join, parent, acoes):
@@ -31,7 +38,7 @@ def check_join(join, parent, acoes):
     if junta == vartipo.BOOL and igual == vartipo.BOOL:
         return vartipo.BOOL
     else:
-        raise EraEsperado(vartipo.BOOL+' e '+vartipo.BOOL, join.stop.line)
+        raise EraEsperado(vartipo.BOOL+' e '+vartipo.BOOL, join.start.line, join.start.column)
 
 
 def check_equality(equality, parent, acoes):
@@ -55,7 +62,7 @@ def check_rel(rel, parent, acoes):
     if expr1 in vartipo.NUM and expr2 in vartipo.NUM:
         return vartipo.BOOL
     else:
-        raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, rel.stop.line)
+        raise EraEsperado(vartipo.INT+'" ou "'+vartipo.FLOAT, rel.start.line, rel.start.column)
 
 
 def check_expr(expr, parent, acoes):
@@ -67,7 +74,7 @@ def check_expr(expr, parent, acoes):
     termo = check_term(expr.children[2], parent, acoes)
 
     if termo not in vartipo.NUM or expressao not in vartipo.NUM:
-        raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, expr.stop.line)
+        raise EraEsperado(vartipo.INT+'" ou "'+vartipo.FLOAT, expr.start.line, expr.start.column)
     return vartipo.FLOAT if expressao == vartipo.FLOAT or \
     termo == vartipo.FLOAT else vartipo.INT
 
@@ -81,7 +88,7 @@ def check_term(term, parent, acoes):
     unario = check_unary(term.children[2], parent, acoes)
 
     if termo not in vartipo.NUM or unario not in vartipo.NUM:
-        raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, term.stop.line)
+        raise EraEsperado(vartipo.INT+'" ou "'+vartipo.FLOAT, term.start.line, term.start.column)
     return vartipo.FLOAT if termo == vartipo.FLOAT or \
     unario == vartipo.FLOAT else vartipo.INT
 
@@ -90,17 +97,18 @@ def check_unary(unary, parent, acoes):
         ret = check_factor(unary.children[0], parent, acoes)
         return ret
 
-    signal = unary.children[0].getText()
+    signal = unary.children[0].getText().upper()
     retorno = check_unary(unary.children[1], parent, acoes)
 
-    if signal == '!' and retorno == vartipo.BOOL:
-        return vartipo.BOOL
-    else:
-        raise EraEsperado(vartipo.BOOL, unary.stop.line);
+    if signal == '!': 
+        if retorno == vartipo.BOOL:
+            return vartipo.BOOL
+        else:
+            raise EraEsperado(vartipo.BOOL, unary.start.line, unary.start.column);
     if signal == '-' and retorno in vartipo.NUM:
         return retorno
     else:
-        raise EraEsperado(vartipo.INT+' ou '+vartipo.FLOAT, unary.stop.line)
+        raise EraEsperado(vartipo.INT+'" ou "'+vartipo.FLOAT, unary.start.line, unary.start.column)
 
 
 def check_factor(factor, parent, acoes):
@@ -110,7 +118,7 @@ def check_factor(factor, parent, acoes):
     if class_name(factor.children[0]).startswith('Chamada'):
         return check_chamada_func_simples(factor.children[0], parent, acoes)
 
-    f_txt = factor.children[0].getText()
+    f_txt = factor.children[0].getText().upper()
 
     if f_txt == 'TRUE' or f_txt == 'FALSE':
         return vartipo.BOOL
@@ -127,50 +135,57 @@ def check_factor(factor, parent, acoes):
     except:
         pass
 
-    return check_ID(f_txt, parent, acoes, factor.stop.line)
+    return check_ID(f_txt, parent, acoes, factor.start.line, factor.start.column)
 
 
 def check_chamada_func_simples(chamada, parent, acoes):
-    f = check_ID_func(chamada.children[0].getText(), parent, acoes, chamada.stop.line)
+    f = check_ID_func(chamada.children[0].getText().upper(), parent, acoes, chamada.start.line, chamada.start.column)
     if len(f.parametros)>0:
         if len(chamada.children)==3:
-            raise FuncaoSemParametros(f.nome, chamada.stop.line)
-        if check_lista_parametros(acoes, parent, f.parametros, chamada.children[2].children, 0):
-            return f.tipo
-        else:
-            raise ParametroIncompaivel(f.nome, chamada.stop.line)
+            raise FuncaoSemParametros(f.nome, chamada.start.line, chamada.start.column)
+
+        if check_lista_parametros(chamada.children[2].children, f.nome, acoes, f.parametros, 0):
+            return f.tipo    
     else:
         return f.tipo
 
-def check_lista_parametros(acoes, parent, parametros, lista, indice):
+def check_lista_parametros(lista, parent, acoes, parametros=None, indice=None):
     first = lista[0]
     if class_name(first).startswith('Boolean'):
-        if parametros[indice].tipo == check_boolean(first, parent, acoes):
-            return True if len(lista) == 1 else check_lista_parametros(acoes, parent, parametros, lista[2], indice+1)
+        check = check_boolean(first, parent, acoes)
+        if parametros == None and indice == None:
+            return check
+        if parametros[indice].tipo == check:
+            return True if len(lista) == 1 else check_lista_parametros(lista[2].children, parent, acoes, parametros, indice+1)
         else:
-            return False
+            raise ParametroIncompaivel(parent, parametros[indice].tipo, check, indice+1, first.start.line, first.start.column)
     if class_name(first).startswith('Chamada'):
-        if parametros[indice].tipo == check_chamada_func_simples(first, parent, acoes):
-            return True if len(lista) == 1 else check_lista_parametros(acoes, parent, parametros, lista[2], indice+1)
+        check = check_chamada_func_simples(first, parent, acoes)
+        if parametros == None and indice == None:
+            return check
+        if parametros[indice].tipo == check:
+            return True if len(lista) == 1 else check_lista_parametros(lista[2].children, parent, acoes, parametros, indice+1)
         else:
-            return False
+            raise ParametroIncompaivel(parent, parametros[indice].tipo, check, indice+1, first.start.line, first.start.column)
     if class_name(first).startswith('Terminal'):
+        if parametros == None and indice == None:
+            return check_STRING(first, parent, acoes)
         if parametros[indice].tipo == vartipo.STRING:
-            return True if len(lista) == 1 else check_lista_parametros(acoes, parent, parametros, lista[2], indice+1)
+            return True if len(lista) == 1 else check_lista_parametros(lista[2].children, parent, acoes, parametros, indice+1)
         else:
-            return False
+            raise ParametroIncompaivel(parent, parametros[indice].tipo, check, indice+1, first.start.line, first.start.column)
 
-def check_ID_func(id, parent, acoes, linha):
+def check_ID_func(id, parent, acoes, linha, coluna):
     f = contains(acoes.funcs_list, lambda func: func.nome == id)
     if f:
         return f
     else:
-        raise NaoDeclaradaError('Função', id, parent, linha)
+        raise NaoDeclaradaError('Função', id, parent, linha, coluna)
 
 def class_name(item):
     return item.__class__.__name__
 
-def check_ID(id, parent, acoes, linha):
+def check_ID(id, parent, acoes, linha, coluna):
     pai = get_from_id(parent, acoes.funcs_list)
     if pai:
         var = contains(pai.parametros, lambda var: var.nome == id)
@@ -182,7 +197,7 @@ def check_ID(id, parent, acoes, linha):
     var = contains(acoes.vars_list, lambda var: var.nome == id and var.parent == acoes.prog_name)
     if var:
         return var.tipo
-    raise NaoDeclaradaError('Variável', id, parent, linha)
+    raise NaoDeclaradaError('Variável', id, parent, linha, coluna)
 
 
 def contains(list, filter):
@@ -200,6 +215,16 @@ def get_from_id(id, _list):
 
 def get_parent(ctx):
     if hasattr(ctx.parentCtx,'ID'):
-        return ctx.parentCtx.ID().getText()
+        return ctx.parentCtx.ID().getText().upper()
     else:
         return get_parent(ctx.parentCtx)
+
+def search_return(ctx):
+    if class_name(ctx).startswith('Retorno'):
+        return ctx
+    else:
+        if hasattr(ctx, 'children'):
+            for c in ctx.children:
+                if search_return(c) != None:
+                    return search_return(c)
+    return None

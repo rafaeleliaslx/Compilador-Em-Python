@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import sys
+
 from antlr4 import *
 from grammar.PortugolLexer import PortugolLexer
 from grammar.PortugolParser import PortugolParser
 from grammar.PortugolListener import PortugolListener
 from antlr4.tree.Trees import Trees
-import traceback
-from models import AcoesSemanticas, Variavel, MyErrorListener
-import os
+
+from models import AcoesSemanticas, Variavel
+from utils.errors import *
 
 
 def print_arvore(arv):
@@ -27,20 +28,20 @@ def print_arvore(arv):
 
 def main(argv):
     try:
-        errors = MyErrorListener()
+        erros = MyErrorListener()
 
         arq = FileStream(argv[1])
         # arq2 = io.TextIOWrapper(write_through=False)
-        arq2 = open('temp.por', 'w')
-        arq2.write(arq.strdata.upper())
-        arq2.close()
+        # arq2 = open('temp.por', 'w')
+        # arq2.write(arq.strdata.upper())
+        # arq2.close()
 
-        arq = FileStream('temp.por')
+        # arq = FileStream('temp.por')
         lexer = PortugolLexer(arq)
         stream = CommonTokenStream(lexer)
         parser = PortugolParser(stream)
         
-        parser._listeners = [errors]
+        # parser._listeners = [erros]
         
         tree = parser.programa()
 

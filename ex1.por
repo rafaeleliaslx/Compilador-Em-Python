@@ -1,23 +1,32 @@
 PROG Teste1;
     INTEIRO N1, N2, a, b, MEDIA;
-    BOOLEANO c, X;
-    REAL R;
+    BOOLEANO c, X, flag;
+    REAL R, R1, R2;
+    STRING NOME;
     //teste 
 
     FUNCAO MEDIA(REAL S1,S2,S3;INTEIRO X):REAL; //teste
         INTEIRO N1;
         BOOLEANO N2; 
-        RETORNE S1;
-
+        RETORNE N2;
     FIM;
 
-    FUNCAO MEDIA2(REAL D1,D2,D3;INTEIRO U):REAL;
+    FUNCAO PRINT(STRING S); //teste
+        IMPRIMA(S);
+	retorne;
+    FIM;
+
+    FUNCAO MEDIA2(REAL D1,D2,D3;INTEIRO U):INTEIRO;
         INTEIRO C1;
         BOOLEANO F1;
-        RETORNE (D1+D2+D3)/X;
+        RETORNE (123);
     FIM;
 
-    N1 = 1;
+    N1 = -1*1;
+    nome = "philippegonzaga";
+    R = MEDIA(6.5, 1.0, 1.0, 1);
+    LEIA(n1,n2);
+    IMPRIMA("Coisa");
     N2 = 10;
     MEDIA(R,R,R);
     SAIR;
@@ -26,10 +35,15 @@ PROG Teste1;
         X = A>0 |A <=0;
         LEIA (N1, Nx2);
 
-        SE ((a+x1>0 & b>0) | (c!= true) ) ENTAO
+        SE ((a+r>0 & b>0) | (c!= r) ) ENTAO
             SAIR;
         SENAO
-            IMPRIMA (MEDIA(N1,N2));
+            IMPRIMA (N1);
         FIM;
-    ATE (1);
+    ATE (flag);
+
+    ENQUANTO (2>=3) FACA
+        media(5.0,5.0,5.0,5);
+    FIM;
 FIM.
+

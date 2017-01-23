@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import os
+import os, syntax
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -83,10 +83,30 @@ class Ui_rayide(object):
         
         self.textEdit = QtGui.QTextEdit(self.splitter)
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
+        self.textEdit.setFontFamily("Monospace")
 
+        palette = self.textEdit.palette()
+        palette.setColor(QtGui.QPalette.Base, QtGui.QColor("black"))
+        self.textEdit.setPalette(palette)
+
+        palette = self.textEdit.palette()
+        palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Text, QtGui.QColor("white"))
+        self.textEdit.setPalette(palette)
+
+        
                 
-        self.plainTextEdit = QtGui.QPlainTextEdit(self.splitter)
+        self.plainTextEdit = QtGui.QTextEdit(self.splitter)
         self.plainTextEdit.setObjectName(_fromUtf8("plainTextEdit"))
+        self.plainTextEdit.setFontFamily("Monospace")
+
+        palette = self.plainTextEdit.palette()
+        palette.setColor(QtGui.QPalette.Base, QtGui.QColor("black"))
+        self.plainTextEdit.setPalette(palette)
+
+        palette = self.plainTextEdit.palette()
+        palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Text, QtGui.QColor("lightGreen"))
+        self.plainTextEdit.setPalette(palette)
+
         self.verticalLayout.addWidget(self.splitter)
         self.gridLayout_2.addLayout(self.verticalLayout, 1, 0, 1, 1)
 
